@@ -22,15 +22,21 @@ while True:
     gray = cv2.cvtColor(diff, cv2.COLOR_BGR2GRAY)
     blur = cv2.GaussianBlur(gray, (5, 5), 0)
     _, thresh = cv2.threshold(blur, 20, 255, cv2.THRESH_BINARY)
-    dilated = cv2.dilate(thresh, None, iterations=4)
+    dilated = cv2.dilate(thresh, np.ones((7,7), np.uint8), iterations=4)
     contours, hirarchy = cv2.findContours(
         dilated, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
-    for contour in contours:
-        (x, y, w, h) = cv2.boundingRect(contour)
-        if cv2.contourArea(contour) < 700:
-            continue
+    if len(contours) !=0:
+        biggest_contour = max(contours, key = cv2.contourArea)
+        (x,y,w,h) = cv2.boundingRect(biggest_contour)
         cv2.rectangle(frame1, (x, y), (x+w, y+h), (0, 255, 255), 2)
+    # # draw the biggest contour (c) in green
+    # cv2.rectangle(output,(x,y),(x+w,y+h),(0,255,0),2)
+    # for contour in contours:
+    #     (x, y, w, h) = cv2.boundingRect(contour)
+    #     if cv2.contourArea(contour) < 700:
+    #         continue
+    #     cv2.rectangle(frame1, (x, y), (x+w, y+h), (0, 255, 255), 2)
 
 
     cv2.imshow('Motion Detector', frame1)
